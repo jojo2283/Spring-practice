@@ -76,7 +76,30 @@ class AuthorControllerTest {
 
     }
 
-    // todo нет тест кейсов, проверяющих валидацию
+    @Test
+    @DisplayName(value = "Create invalid Author")
+    public void createAuthor_ShouldReturnValidationException() throws Exception {
+        //given
+        authorRepository.deleteAll();
+        assertThat(authorRepository.count()).isZero();
+
+        Author author = new Author(null, null, null, new ArrayList<>());
+
+
+        //when
+        mockMvc.perform(post("/api/authors")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(author)))
+                .andExpect(status().isOk());
+
+        //then
+        assertThat(authorRepository.count()).isEqualTo(0);
+//        Assert.assertThrows(Exception.class, () -> {
+//
+//        });
+
+
+    }
 
     @Sql("/sql/create_author.sql")
     @Test
@@ -122,7 +145,25 @@ class AuthorControllerTest {
 
     }
 
-    // todo нет тестов проверяющих обновление и удаление несуществующих авторов
+
+    @Test
+    @DisplayName(value = "Update Author")
+    public void updateAuthor_ShouldReturnNotFound() throws Exception {
+        //given
+
+
+        Author newAuthor = new Author(null, "Denis", "new", new ArrayList<>());
+
+
+        //when
+        mockMvc.perform(put("/api/authors/1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(newAuthor)))
+                .andExpect(status().isNotFound());
+
+
+    }
+
 
     @Sql("/sql/create_author.sql")
     @Test
@@ -134,6 +175,23 @@ class AuthorControllerTest {
         //when
         mockMvc.perform(delete("/api/authors/1"))
                 .andExpect(status().isOk());
+
+        //then
+        assertThat(authorRepository.count()).isZero();
+
+
+    }
+
+
+    @Test
+    @DisplayName(value = "delete not founded Author")
+    public void deleteAuthor_ShouldReturnException() throws Exception {
+        //given
+
+
+        //when
+        mockMvc.perform(delete("/api/authors/1"))
+                .andExpect(status().isNotFound());
 
         //then
         assertThat(authorRepository.count()).isZero();

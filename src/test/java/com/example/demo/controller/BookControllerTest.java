@@ -25,8 +25,7 @@ import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZO
 
 @AutoConfigureEmbeddedDatabase(
         provider = ZONKY,
-        refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD,
-        type = AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES) // БД замокана у нас, эта настойка излишняя
+        refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD)
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)

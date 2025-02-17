@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.UserEntity;
 import com.example.demo.model.request.JwtRequest;
 import com.example.demo.model.request.RegistrationRequest;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -20,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.zonky.test.db.AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,10 +44,17 @@ class AuthControllerTest {
     @Mock
     private AuthService authService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
-    @Order(1) // Это плохая практика делать тест кейсы взаимосвязанными
+    @Order(1)
+        // Это плохая практика делать тест кейсы взаимосвязанными
     void testRegister() throws Exception {
-        RegistrationRequest regRequest = new RegistrationRequest("user", "test@mail.ru", "password");
+        String username = "user";
+        String email = "test@mail.ru";
+        String password = "password";
+        RegistrationRequest regRequest = new RegistrationRequest(username, email, password);
 
 
         mockMvc.perform(post("/api/auth/register")
@@ -52,11 +62,17 @@ class AuthControllerTest {
                         .content(new ObjectMapper().writeValueAsString(regRequest)))
                 .andExpect(status().isOk());
 
-        // todo тут хорошо бы проверить, что пользователь создался в БД
+
+        assertThat(userRepository.count()).isEqualTo(1);
+
+        UserEntity user = userRepository.findAll().get(0);
+        assertThat(user.getUsername()).isEqualTo(username);
+        assertThat(user.getEmail()).isEqualTo(email);
     }
 
     @Test
-    @Order(2) // todo лучше создать тестового пользователя sql скриптом
+    @Order(2)
+        // todo лучше создать тестового пользователя sql скриптом
     void testLogin() throws Exception {
         JwtRequest authRequest = new JwtRequest("user", "password");
 
