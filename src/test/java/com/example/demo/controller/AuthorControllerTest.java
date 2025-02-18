@@ -90,13 +90,11 @@ class AuthorControllerTest {
         mockMvc.perform(post("/api/authors")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(author)))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         //then
         assertThat(authorRepository.count()).isEqualTo(0);
-//        Assert.assertThrows(Exception.class, () -> {
-//
-//        });
+
 
 
     }

@@ -1,0 +1,1 @@
+insert into user_entity(username, password) values('username', '$2a$10$qaKcCIO8/CXJnaAUyTP1JOtyilJpz2HEW7X3gnaA/xOTbYVvisec2');
